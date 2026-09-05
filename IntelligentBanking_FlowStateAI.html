@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>IntelligentBanking_FlowStateAI</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin: 0; padding: 0; }
+  :root{
+    --red:#E4002B; --red2:#B80022; --ink:#15171C; --sub:#5A616B; --line:#E6E7EA;
+    --bg:#FFFFFF; --soft:#FCEFF1; --green:#0E9F6E; --amber:#E8910C; --orange:#F2711C;
+    --navy:#0F2A4A; --navysoft:#EEF2F7;
+  }
+  body{ font-family:"Segoe UI",Arial,sans-serif; color:var(--ink); font-size:9.6pt; line-height:1.28; background:var(--bg); }
+  .page{ width:210mm; min-height:297mm; padding:0 0 8mm; position:relative; }
+  .pad{ padding:0 13mm; }
+
+  /* Masthead */
+  .mast{ background:linear-gradient(120deg,var(--red) 0%,var(--red2) 100%); color:#fff; padding:9mm 13mm 7mm; }
+  .mast .brandrow{ display:flex; align-items:center; gap:10px; }
+  .logo{ width:24px;height:24px;border-radius:6px;background:#fff;color:var(--red);font-weight:900;display:grid;place-items:center;font-size:13px; }
+  .brand{ font-size:10pt; font-weight:800; letter-spacing:.5px; text-transform:uppercase; opacity:.95; }
+  h1{ font-size:23pt; margin:6px 0 3px; font-weight:900; letter-spacing:-.4px; }
+  .tag{ font-size:10.4pt; opacity:.92; max-width:160mm; line-height:1.28; }
+  .metastrip{ display:flex; gap:0; margin-top:8px; border-top:1px solid rgba(255,255,255,.28); padding-top:6px; font-size:8.4pt; }
+  .metastrip div{ padding-right:18px; } .metastrip b{ color:#fff; }
+
+  /* Section header */
+  .sh{ display:flex; align-items:center; gap:8px; margin:7px 0 3px; break-inside:avoid; }
+  .sh.brk{ break-before:page; margin-top:0; }
+  .sh .bar{ width:4px; height:15px; background:var(--red); border-radius:2px; }
+  .sh h2{ font-size:10.2pt; margin:0; text-transform:uppercase; letter-spacing:.5px; color:var(--red); font-weight:800; }
+  p{ margin:0 0 3px; orphans:2; widows:2; } .lead{ font-size:9.8pt; }
+
+  /* Scam journey flow */
+  .flow{ display:flex; align-items:stretch; gap:0; margin:3px 0 2px; }
+  .step{ flex:1; text-align:center; background:var(--soft); border:1px solid #f2c9d1; padding:5px 2px; font-size:7.8pt; font-weight:700; color:var(--red2); position:relative; }
+  .step.loss{ background:var(--red); color:#fff; border-color:var(--red); }
+  .arrow{ display:flex; align-items:center; color:var(--red); font-weight:900; padding:0 3px; font-size:11px; }
+  .gapnote{ font-size:8.6pt; color:var(--sub); margin-top:3px; }
+
+  /* Three-interface mockup strip */
+  .ifaces{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; margin:3px 0 2px; }
+  .iface{ border-radius:7px; overflow:hidden; border:1px solid var(--line); }
+  .iface .top{ padding:4px 7px; font-size:8pt; font-weight:800; color:#fff; display:flex; justify-content:space-between; align-items:center; }
+  .iface.user .top{ background:var(--red); }
+  .iface.staff .top{ background:var(--navy); }
+  .iface.guardian .top{ background:#3B4652; }
+  .iface .body{ background:#fff; padding:5px 7px; font-size:7.6pt; color:var(--sub); line-height:1.26; min-height:0; }
+  .iface .path{ font-size:6.9pt; opacity:.85; font-weight:600; }
+  .iface .body b{ color:var(--ink); }
+
+  /* Layer cards */
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:4px; margin:2px 0 2px; }
+  .card{ border:1px solid var(--line); border-left:3px solid var(--red); border-radius:6px; padding:5px 8px; background:#fff; }
+  .card .n{ display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;background:var(--red);color:#fff;font-size:8.2pt;font-weight:800;margin-right:5px; }
+  .card .t{ font-weight:800; font-size:9pt; }
+  .card .d{ font-size:8.2pt; color:var(--sub); margin-top:1px; line-height:1.26; }
+
+  /* Core innovation box */
+  .core{ border:1.5px solid var(--red); border-radius:6px; background:var(--soft); padding:5px 8px; margin:2px 0; }
+  .core .h{ font-weight:800; color:var(--red); font-size:8.8pt; text-transform:uppercase; letter-spacing:.4px; margin-bottom:1px; }
+  .core p{ margin:0; font-size:8.8pt; line-height:1.3; }
+  .rules{ margin:3px 0 2px; display:grid; grid-template-columns:1fr 1fr; gap:2px 10px; }
+  .rule{ font-size:8.1pt; } .rule b{ color:var(--red2); }
+
+  /* Registry / feedback loop box */
+  .loop{ border:1.5px solid var(--navy); border-radius:6px; background:var(--navysoft); padding:5px 8px; margin:2px 0 0; }
+  .loop .h{ font-weight:800; color:var(--navy); font-size:8.8pt; text-transform:uppercase; letter-spacing:.4px; margin-bottom:1px; }
+  .loop p{ margin:0; font-size:8.6pt; line-height:1.28; color:var(--ink); }
+  .loop .chain{ display:flex; gap:3px; margin-top:3px; font-size:7.3pt; font-weight:700; color:var(--navy); flex-wrap:wrap; align-items:center; }
+  .loop .chain span.b{ background:#fff; border:1px solid var(--navy); border-radius:10px; padding:1.5px 6px; }
+
+  /* Intervention ladder */
+  .ladder{ display:flex; gap:4px; margin:3px 0; }
+  .rung{ flex:1; border-radius:6px; padding:6px 7px; color:#fff; }
+  .rung .lv{ font-weight:800; font-size:8.6pt; } .rung .ds{ font-size:7.8pt; opacity:.95; line-height:1.22; }
+  .r-low{ background:var(--green);} .r-el{ background:var(--amber);} .r-hi{ background:var(--orange);} .r-cr{ background:var(--red);}
+
+  /* Feasibility bullets */
+  ul.tick{ margin:2px 0 4px; padding:0; list-style:none; }
+  ul.tick li{ font-size:9pt; margin:0 0 3px; padding-left:15px; position:relative; }
+  ul.tick li:before{ content:"✓"; color:var(--red); font-weight:900; position:absolute; left:0; }
+
+  /* TAM/SAM/SOM */
+  .tss{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin:3px 0 4px; }
+  .tssb{ border-radius:7px; padding:7px 8px; background:var(--navysoft); border:1px solid #D7E0EB; }
+  .tssb .k{ font-weight:900; font-size:12pt; color:var(--navy); } .tssb .l{ font-size:7.6pt; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:var(--red2); }
+  .tssb .d{ font-size:7.6pt; color:var(--sub); margin-top:2px; line-height:1.28; }
+
+  /* Personas */
+  .personas{ display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:3px 0 4px; }
+  .persona{ border:1px solid var(--line); border-radius:7px; padding:7px 9px; background:#FAFAFA; }
+  .persona .who{ font-weight:800; font-size:9pt; color:var(--red2); } .persona .txt{ font-size:8.4pt; color:var(--sub); margin-top:2px; line-height:1.3; }
+
+  /* Impact 3-col */
+  .impact{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin:3px 0 4px; }
+  .imp{ border-top:2px solid var(--red); padding:5px 2px 0; }
+  .imp .who{ font-weight:800; font-size:9pt; color:var(--red); } .imp .txt{ font-size:8.4pt; color:var(--sub); margin-top:2px; }
+
+  /* compact table */
+  table{ width:100%; border-collapse:collapse; margin:3px 0 5px; font-size:8.6pt; }
+  th,td{ border:1px solid var(--line); padding:3.5px 6px; text-align:left; vertical-align:top; }
+  th{ background:var(--soft); color:var(--red2); font-weight:800; }
+  td b{ color:var(--ink); }
+  /* worked example */
+  .ex{ border:1px solid var(--line); border-left:3px solid var(--ink); border-radius:5px; padding:6px 9px; margin:3px 0; background:#FAFAFA; }
+  .ex .h{ font-weight:800; font-size:9.2pt; margin-bottom:2px; }
+  .ex .trace{ font-size:8.6pt; line-height:1.38; } .ex .trace b{ color:var(--red2); }
+  .ex .verdict{ margin-top:3px; font-size:8.6pt; line-height:1.38; } .ex .verdict b{ color:var(--red); }
+  .twocol{ display:grid; grid-template-columns:1fr 1fr; gap:10px; break-inside:avoid; }
+  .sh + p, .sh + .lead{ break-before:avoid; }
+  .quote{ font-size:9.8pt; font-style:italic; border-left:3px solid var(--red); padding:3px 0 3px 9px; color:var(--ink); margin:4px 0; }
+  .foot{ margin-top:6px; border-top:1px solid var(--line); padding-top:5px; font-size:8.2pt; color:var(--sub); display:flex; justify-content:space-between; }
+  .avoid{ break-inside:avoid; }
+  .stackrow{ display:flex; gap:5px; flex-wrap:wrap; margin:2px 0 4px; }
+  .pill{ background:var(--navysoft); border:1px solid #D7E0EB; color:var(--navy); font-size:7.8pt; font-weight:700; padding:3px 8px; border-radius:10px; }
+  .src{ font-size:7.4pt; color:var(--sub); font-style:italic; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <div class="mast">
+    <div class="brandrow"><div class="logo">✦</div><div class="brand">OCBC · ScamGuard</div></div>
+    <h1>Guardian Angel</h1>
+    <div class="tag">An autonomous, proportional scam-defence system that protects customers <b>before</b> irreversible loss, then turns every confirmed case into institutional memory — without adding friction to ordinary banking.</div>
+    <div class="metastrip">
+      <div>Team&nbsp; <b>FlowState AI</b></div>
+      <div>Category&nbsp; <b>Intelligent Banking (OCBC)</b></div>
+      <div>PolyFinTech100 API Hackathon 2026</div>
+    </div>
+  </div>
+
+  <div class="pad">
+
+    <!-- 1. PROBLEM STATEMENT -->
+    <div class="sh"><span class="bar"></span><h2>1 · The Problem &amp; Industry Gap</h2></div>
+    <p class="lead">Singapore lost <b>S$1.1 billion to scams in 2024</b>, with authorised push-payment (APP) scams — where the victim is logged in and authorises the transfer themselves — the fastest-growing category. <span class="src">(Singapore Police Force, Annual Scams &amp; Cybercrime Brief 2024)</span> Ordinary authentication cannot stop this: the customer <i>is</i> the one clicking confirm. Existing bank controls act mainly at the last step — the transfer itself — but the scam begins far earlier, and victims aged 50+ account for a disproportionate share of losses as Singapore's population ages toward <b>1 in 4 residents being seniors by 2030</b>.</p>
+    <div class="flow avoid">
+      <div class="step">Contact</div><div class="arrow">→</div>
+      <div class="step">Manipulation</div><div class="arrow">→</div>
+      <div class="step">Account&nbsp;Action</div><div class="arrow">→</div>
+      <div class="step">Transfer</div><div class="arrow">→</div>
+      <div class="step loss">Loss</div>
+    </div>
+    <div class="gapnote">Most bank controls watch here&nbsp;↑ (too late). Guardian Angel reasons across the <b>whole journey</b>, and closes the loop after loss occurs at any one customer, not just that one transaction.</div>
+
+    <!-- 2. PROPOSED SOLUTION -->
+    <div class="sh"><span class="bar"></span><h2>2 · Proposed Solution</h2></div>
+    <p>Guardian Angel is an autonomous scam-defence layer for OCBC that reasons over a customer's <b>caller identity, device behaviour, recipient network history and transaction pattern together</b> — not the amount alone — to decide the least-intrusive protective action, and automatically opens a case for OCBC's fraud team when it acts. <b>What makes it different:</b> a deterministic, auditable rule engine computes risk; a bounded AI second opinion can only ever raise it, never lower it; and a policy engine — not the AI — is the sole enforcer of what happens to the customer's money. When staff confirm a case as a scam, that account is flagged for every future customer OCBC ever asks about it — the system gets smarter with every case, not just faster.</p>
+
+    <!-- 3. KEY FEATURES -->
+    <div class="sh"><span class="bar"></span><h2>3 · How It Works — Three Interfaces, One Risk Engine</h2></div>
+    <div class="ifaces avoid">
+      <div class="iface user">
+        <div class="top">Customer App <span class="path">"/"</span></div>
+        <div class="body">Grace's OCBC app — transfers, Verify Caller and Adaptive Care folded into <b>one</b> screen. Never shows a score; only a plain-language ask.</div>
+      </div>
+      <div class="iface staff">
+        <div class="top">Staff Console <span class="path">"/staff"</span></div>
+        <div class="body">OCBC risk-ops login → dashboard → <b>case log</b> → case investigation → <b>Risk Account Registry</b>. Where a human closes the loop.</div>
+      </div>
+      <div class="iface guardian">
+        <div class="top">Guardian Contact <span class="path">"/guardian"</span></div>
+        <div class="body">The nominated guardian (e.g. an adult child) — <b>informed, never in charge</b>. Read-only alerts, no approval power over the account.</div>
+      </div>
+    </div>
+    <div class="grid avoid">
+      <div class="card"><div class="t"><span class="n">1</span>Caller Verification</div><div class="d">A live in-app code the caller must read back confirms a genuine authenticated OCBC session — stops impersonation before it starts.</div></div>
+      <div class="card"><div class="t"><span class="n">2</span>Recipient Network Check</div><div class="d">Screens the recipient for mule-account patterns and, where a contact email is supplied, a real breach-exposure lookup.</div></div>
+      <div class="card"><div class="t"><span class="n">3</span>Smart-Lock (Money Lock)</div><div class="d">Detects account-takeover sequences (new device + credential reset + limit change) and secures funds — reversible, never frozen.</div></div>
+      <div class="card"><div class="t"><span class="n">4</span>Adaptive Financial Care</div><div class="d">Detects sustained manipulation over weeks and escalates proportionally: info → questions → cooling-off → guardian → human support.</div></div>
+    </div>
+
+    <div class="core avoid">
+      <div class="h">The Risk Engine — Not One Signal, an Adaptive Combination</div>
+      <p>Every signal is tagged to a <b>family</b> (transaction, behavioural, device-security, recipient-network, identity). A <b>diversity gate</b> requires evidence from <b>2+ independent families</b> before a high-risk action is allowed to stand — <b>a large amount alone is never high risk.</b> A bounded AI second opinion (Claude) can only <b>raise</b> the deterministic score, never lower it; a separate <b>policy engine enforces the action and can never block funds directly</b> — every decision reproducible, auditable and explainable.</p>
+    </div>
+    <div class="rules avoid">
+      <div class="rule"><b>R1 Account-Takeover</b> — 2+ security changes + balance drain</div>
+      <div class="rule"><b>R2 Scam-Recipient</b> — large + new overseas payee + network flag</div>
+      <div class="rule"><b>R3 Social-Engineering</b> — new payee + savings liquidation + dismissed warnings</div>
+      <div class="rule"><b>R4 Compromise + Mule</b> — new device + network-flagged recipient</div>
+    </div>
+
+    <div class="loop avoid">
+      <div class="h">New — Risk Account Registry &amp; the Staff Feedback Loop</div>
+      <p>Every transfer's recipient account is cross-referenced against a Risk Account Registry (Blacklisted / Watchlist / Cleared) — a real signal feeding the score, not a static list. When a case scores MEDIUM or above, it <b>auto-opens</b> in the Staff Console; when staff confirm it as a scam, the registry updates and <b>every future transfer to that account is scored differently</b>, for any customer.</p>
+      <div class="chain">
+        <span class="b">AI detects</span>→<span class="b">Case opens</span>→<span class="b">Staff confirms</span>→<span class="b">Registry updates</span>→<span class="b">Next transfer cross-referenced</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="pad">
+    <div class="sh brk"><span class="bar"></span><h2>4 · Market Impact &amp; Use Cases</h2></div>
+    <div class="tss avoid">
+      <div class="tssb"><div class="l">TAM</div><div class="k">S$1.1B</div><div class="d">Annual scam losses across Singapore, 2024 — the addressable harm a transaction-layer defence can reduce. <span class="src">(SPF 2024)</span></div></div>
+      <div class="tssb"><div class="l">SAM</div><div class="k">~4.5M</div><div class="d">OCBC's Singapore retail &amp; wealth customers exposed to APP-scam risk on every transfer they make. <span class="src">(OCBC Group, public disclosures)</span></div></div>
+      <div class="tssb"><div class="l">SOM</div><div class="k">~1M+</div><div class="d">Phase-1 target: OCBC customers aged 55+ and their nominated guardians — the highest-risk cohort for APP and long-con scams.</div></div>
+    </div>
+    <div class="personas avoid">
+      <div class="persona"><div class="who">Grace, 68 — retail customer</div><div class="txt">A caller claiming to be "OCBC Fraud" pressures her toward a S$15,000 transfer to a new payee right after a fixed-deposit payout. Guardian Angel verifies the caller fails, flags the recipient, and holds the transfer with a plain-language reason — Grace stays in control and can release it herself in seconds if it's genuine.</div></div>
+      <div class="persona"><div class="who">Wei Ming — OCBC risk-ops analyst</div><div class="txt">Grace's held transfer auto-opens a case in his Staff Console with the exact signals, matched pattern and AI assessment already laid out. He confirms it as a scam in one click — the recipient account is now blacklisted for every OCBC customer, not just Grace.</div></div>
+    </div>
+
+    <div class="sh"><span class="bar"></span><h2>5 · Technical Feasibility &amp; Stack</h2></div>
+    <div class="stackrow avoid">
+      <span class="pill">React + Vite + TypeScript + Tailwind (3 apps)</span>
+      <span class="pill">Node.js + Express + TypeScript backend</span>
+      <span class="pill">Anthropic Claude API — claude-sonnet-5</span>
+      <span class="pill">XposedOrNot breach-lookup API</span>
+    </div>
+    <p style="font-size:8.8pt;">A <b>working, live prototype</b> — not a mockup: real forced-tool Claude calls power the AI second opinion and action recommendation, with an honestly-labelled cached fallback (`source: 'live' | 'cached_fallback'`) if a call times out. The rule engine, diversity gate, policy enforcement, Money Lock, verification-code lifecycle and the staff feedback loop are all real executing code — see the worked example below, traced against the actual scoring weights, not asserted.</p>
+
+    <div class="ex avoid">
+      <div class="h">Worked example — traced live against the current build, not hard-coded</div>
+      <div class="trace">S$15,000 to David Lim, a brand-new payee, shortly after a savings liquidation, while his account sits on the Risk Account Registry <b>watchlist</b>. Four signals fire across <b>three families</b>: <i>behavioural</i> (new recipient 18, savings liquidation 30) + <i>transaction</i> (amount far exceeds typical, 30) + <i>recipient-network</i> (registry watchlist, 18) = <b>96/100</b>. Diversity gate passes on family count alone — no pattern rule even needed.</div>
+      <div class="verdict"><b>Result:</b> CRITICAL → reversible hold + Money Lock + guardian informed + case opens in the Staff Console automatically. When staff confirm the case, the registry escalates David Lim to <b>blacklisted</b>; the identical transfer re-run then scores <b>100/100</b>. <i>By contrast, S$1 to an unrelated, clean new payee produces one signal in one family — stays LOW, opens no case.</i></div>
+    </div>
+
+    <div class="sh"><span class="bar"></span><h2>6 · Financial &amp; Timing Viability</h2></div>
+    <div class="twocol avoid">
+      <div>
+        <div style="font-weight:800;font-size:9pt;color:var(--red2);margin-bottom:2px;">Financial viability</div>
+        <ul class="tick" style="margin-top:0">
+          <li>Marginal cost per assessment ≈ 1–2 Claude API calls — cents, not dollars, per protected transfer.</li>
+          <li>No new customer-facing hardware or channel; runs inside OCBC's existing app and ops tooling.</li>
+          <li>A single prevented S$15,000 case (this build's own worked example) already covers years of API cost for that customer.</li>
+          <li>Registry-driven learning means detection cost per case <b>falls</b> as institutional memory grows — the opposite of a static rules list.</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-weight:800;font-size:9pt;color:var(--red2);margin-bottom:2px;">Timing viability</div>
+        <ul class="tick" style="margin-top:0">
+          <li><b>Now:</b> working 3-interface prototype — User, Staff, Guardian — on a shared backend, demoed live.</li>
+          <li><b>Phase 1 (0–6m):</b> pilot live scam interception with a limited risk-ops cohort.</li>
+          <li><b>Phase 2 (7–12m):</b> vulnerability monitoring at scale + Great Eastern data synergies.</li>
+          <li><b>Phase 3 (Y2+):</b> regional scaling of the registry as a shared industry signal.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sh"><span class="bar"></span><h2>One System, Every Stage of the Scam</h2></div>
+    <table class="avoid">
+      <tr><th style="width:24%">Scam type</th><th>Primary layer(s)</th><th style="width:38%">What stops it</th></tr>
+      <tr><td><b>Impersonation</b> (fake OCBC/police)</td><td>Caller Verification</td><td>Caller can't produce the live in-app code → not verified.</td></tr>
+      <tr><td><b>Mule / scam-recipient</b></td><td>Recipient Network + Registry</td><td>Recipient flagged as mule-like or already on the Risk Account Registry.</td></tr>
+      <tr><td><b>Phishing / takeover</b></td><td>Smart-Lock</td><td>Device + credential + limit changes → funds secured in Money Lock.</td></tr>
+      <tr><td><b>Romance / long-con</b></td><td>Adaptive Care</td><td>Sustained escalation over weeks → proportionate, human-supported.</td></tr>
+      <tr><td><b>Repeat offender accounts</b></td><td>Staff feedback loop</td><td>One confirmed case protects <i>every</i> future OCBC customer from that account.</td></tr>
+    </table>
+
+    <div class="quote avoid">Guardian Angel moves banking from "Is this transaction suspicious?" to "Is this customer being manipulated — and what did we learn that protects the next one?"</div>
+
+    <div class="foot">
+      <span><b>FlowState AI</b> · OCBC ScamGuard — Guardian Angel</span>
+      <span>Intelligent Banking · PolyFinTech100 2026</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+dist-ssr/
+
+# env / secrets — never commit
+.env
+.env.local
+.env.*.local
+
+# runtime data (registry/cases persisted at runtime)
+backend/data/*.json
+
+# logs
+*.log
+npm-debug.log*
+
+# editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.local
+
+# claude code local config/skills — not part of the app
+.claude/
